@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, Float, Boolean, Text, DateTime, JSON, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
 from app.database import Base
+
 
 class Product(Base):
     __tablename__ = "products"
@@ -26,9 +28,18 @@ class Product(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    # CATEGORY RELATION
     category_id = Column(Integer, ForeignKey("categories.id"))
-    category_rel = relationship("Category", back_populates="products")   # <-- IMPORTANT
+    category_rel = relationship("Category", back_populates="products")
 
+    # AUTO RETURN CATEGORY NAME
+    @hybrid_property
+    def category_name(self):
+        if self.category_rel:
+            return self.category_rel.name
+        return None
+
+    # RELATIONSHIPS
     cart_items = relationship("Cart", back_populates="product")
     order_items = relationship("OrderItem", back_populates="product")
     reviews = relationship("Review", back_populates="product")
