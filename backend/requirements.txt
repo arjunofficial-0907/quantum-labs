@@ -1,4 +1,3 @@
-# backend/requirements.txt
 fastapi
 uvicorn
 sqlalchemy
@@ -10,3 +9,5 @@ python-multipart
 pyjwt
 python-dotenv
 razorpay
+email-validator
+pydantic[email]
