@@ -21,7 +21,7 @@ const Topbar = ({ onNewsletterOpen }) => {
 
           {/* Welcome text */}
           <span className="font-medium tracking-wide">
-            Welcome to Final Year Projects!!
+            Welcome to QuantumLabs Projects!!
           </span>
 
           {/* Desktop Right Section */}

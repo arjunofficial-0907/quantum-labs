@@ -111,7 +111,7 @@ const Cart = () => {
               onClick={handleRazorpayPayment}
               className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition font-semibold shadow-md"
             >
-              Pay with Razorpay
+              Pay now
             </button>
           </div>
         </div>
