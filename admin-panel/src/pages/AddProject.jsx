@@ -9,9 +9,11 @@ const AddProject = () => {
     price: "",
     discount_price: "",
     category_id: "",
+    rating: "",
+    reviews_count: "",
   });
 
-  const [techStack, setTechStack] = useState([]);
+  const [techStack, setTechStack] = useState([]);   // FIXED NAME
   const [techInput, setTechInput] = useState("");
 
   const [imageFile, setImageFile] = useState(null);
@@ -24,11 +26,11 @@ const AddProject = () => {
     { id: 4, name: "Artificial Intelligence" },
     { id: 5, name: "Web Development" },
     { id: 6, name: "App Development" },
-    { id: 7, name: "Mern Stack" }
+    { id: 7, name: "Mern Stack" },
   ];
 
   const handleTechAdd = (e) => {
-    if (e.key === "Enter" && techInput.trim() !== "") {
+    if (e.key === "Enter" && techInput.trim()) {
       e.preventDefault();
       setTechStack([...techStack, techInput.trim()]);
       setTechInput("");
@@ -51,7 +53,7 @@ const AddProject = () => {
     const data = new FormData();
     Object.entries(form).forEach(([key, value]) => data.append(key, value));
     data.append("image", imageFile);
-    techStack.forEach((item) => data.append("tech_stack", item));
+    data.append("tech_stack", JSON.stringify(techStack));  // FIXED
 
     try {
       await addProject(data, token);
@@ -64,7 +66,7 @@ const AddProject = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
+    <div className="max-w-3xl mx-auto mt-10 px-4">
       <form
         onSubmit={submit}
         className="p-8 bg-white rounded-xl shadow-xl border space-y-6"
@@ -91,7 +93,7 @@ const AddProject = () => {
           <textarea
             className="mt-1 border px-3 py-2 w-full rounded-md"
             placeholder="Project description"
-            rows="4"
+            rows="3"
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
         </div>
@@ -110,7 +112,7 @@ const AddProject = () => {
           </select>
         </div>
 
-        {/* Prices */}
+        {/* Price & Discount */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="font-medium text-gray-700">Price</label>
@@ -133,7 +135,33 @@ const AddProject = () => {
           </div>
         </div>
 
-        {/* Tech stack */}
+        {/* Rating & Reviews */}
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div>
+            <label className="font-medium text-gray-700">Rating</label>
+            <input
+              type="number"
+              step="0.1"
+              min="1"
+              max="5"
+              placeholder="4.5"
+              className="mt-1 border px-3 py-2 w-full rounded-md"
+              onChange={(e) => setForm({ ...form, rating: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label className="font-medium text-gray-700">Reviews Count</label>
+            <input
+              type="number"
+              placeholder="21"
+              className="mt-1 border px-3 py-2 w-full rounded-md"
+              onChange={(e) => setForm({ ...form, reviews_count: e.target.value })}
+            />
+          </div>
+        </div>
+
+        {/* Tech Stack */}
         <div>
           <label className="font-medium text-gray-700">Tech Stack</label>
           <input
@@ -161,7 +189,7 @@ const AddProject = () => {
           </div>
         </div>
 
-        {/* Image upload with preview */}
+        {/* Image Upload */}
         <div>
           <label className="font-medium text-gray-700">Project Image</label>
           <div className="mt-2 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -184,8 +212,8 @@ const AddProject = () => {
           {preview && (
             <img
               src={preview}
-              alt="Preview"
-              className="mt-4 rounded-lg shadow-md h-40 object-cover w-full"
+              className="mt-4 rounded-lg shadow-md h-44 object-cover w-full"
+              alt="preview"
             />
           )}
         </div>

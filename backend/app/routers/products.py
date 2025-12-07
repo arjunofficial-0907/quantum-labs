@@ -7,7 +7,7 @@ from app.models.user import User
 from app.utils.auth import get_current_user
 from app.models.category import Category
 from fastapi.responses import JSONResponse
-import uuid, os
+import uuid, os, json
 
 router = APIRouter(prefix="/api/products", tags=["Products"])
 
@@ -67,7 +67,7 @@ def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
     return serialize_product(product)
 
 
-# ---------- CREATE PRODUCT (MULTIPART FORM + FILE UPLOAD) ----------
+# ---------- CREATE PRODUCT ----------
 @router.post("/")
 def create_product(
     title: str = Form(...),
@@ -75,6 +75,10 @@ def create_product(
     price: float = Form(...),
     discount_price: float = Form(None),
     category_id: int = Form(...),
+    tech_stack: str = Form("[]"),
+    features: str = Form("[]"),
+    rating: float = Form(0.0),                # NEW
+    reviews_count: int = Form(0),             # NEW
     is_featured: bool = Form(True),
     image: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -93,16 +97,26 @@ def create_product(
     if existing_slug:
         slug = f"{slug}-{uuid.uuid4().hex[:6]}"
 
-    # save image to uploads folder
+    # save file
     filename = f"{uuid.uuid4().hex}.jpg"
-    save_path = f"uploads/products/{filename}"   # local folder path
-
+    save_path = f"uploads/products/{filename}"
     os.makedirs("uploads/products", exist_ok=True)
+
     with open(save_path, "wb") as buffer:
         buffer.write(image.file.read())
 
-    # public url to serve image
     image_url = f"http://127.0.0.1:8000/static/products/{filename}"
+
+    # parse json fields
+    try:
+        tech_list = json.loads(tech_stack)
+    except:
+        tech_list = []
+
+    try:
+        feature_list = json.loads(features)
+    except:
+        feature_list = []
 
     new_product = Product(
         title=title,
@@ -114,8 +128,10 @@ def create_product(
         slug=slug,
         is_featured=is_featured,
         stock=100,
-        tech_stack=["React"],
-        features=["Basic"],
+        tech_stack=tech_list,
+        features=feature_list,
+        rating=rating,                      # NEW
+        reviews_count=reviews_count,        # NEW
     )
 
     db.add(new_product)
@@ -127,12 +143,15 @@ def create_product(
 
 # ---------- DELETE PRODUCT ----------
 @router.delete("/{product_id}")
-def delete_product(product_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def delete_product(
+    product_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="Not allowed")
 
     product = db.query(Product).filter(Product.id == product_id).first()
-
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
