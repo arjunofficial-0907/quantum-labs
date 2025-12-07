@@ -8,3 +8,5 @@ python-jose
 pydantic
 python-multipart
 pyjwt
+python-dotenv
+razorpay
