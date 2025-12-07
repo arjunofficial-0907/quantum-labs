@@ -1,4 +1,5 @@
 # backend/app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,24 +7,35 @@ from dotenv import load_dotenv
 import os
 
 from app.database import Base, engine
-from app.routers import auth, products, cart, orders, categories, contact
+from app.routers import auth, products, cart, orders, categories, contact, payments
 
-# Load environment variables from .env
+# Load environment variables
 load_dotenv()
 
-# Initialize FastAPI
 app = FastAPI(
     title="QuantumLabs API",
     version="1.0.0"
 )
 
-# Frontend & Admin URLs from .env
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
-ADMIN_URL = os.getenv("ADMIN_URL", "http://localhost:5174")
+# Read allowed URLs from .env
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+ADMIN_URL = os.getenv("ADMIN_URL")
 
-origins = [FRONTEND_URL, ADMIN_URL]
+# Allowed origins
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+]
 
-# CORS Middleware
+# Add production URLs if present
+if FRONTEND_URL:
+    origins.append(FRONTEND_URL)
+if ADMIN_URL:
+    origins.append(ADMIN_URL)
+
+# CORS SETTINGS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -32,17 +44,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create uploads folder if not exists
+# Ensure uploads folder exists
 os.makedirs("uploads/products", exist_ok=True)
 
-# Serve static product images
+# Serve uploaded images
 app.mount(
     "/static/products",
     StaticFiles(directory="uploads/products"),
     name="product_images"
 )
 
-# Create DB tables
+# Create database tables
 Base.metadata.create_all(bind=engine)
 
 # Routers
@@ -52,8 +64,9 @@ app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(categories.router)
 app.include_router(contact.router)
+app.include_router(payments.router)
 
 
 @app.get("/")
 def root():
-    return {"message": "QuantumLabs API v1.0 running"}
+    return {"message": "QuantumLabs API v1.0 running 🚀"}
