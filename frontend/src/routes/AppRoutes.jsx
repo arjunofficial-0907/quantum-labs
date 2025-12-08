@@ -2,7 +2,7 @@
 
 import { Routes, Route } from "react-router-dom";
 
-import Homepage from "../pages/Homepage.jsx";
+import Home from "../pages/Home.jsx";
 import Shop from "../pages/Shop.jsx";
 import ProductDetails from "../pages/ProductDetails.jsx";
 import Login from "../pages/Login.jsx";
@@ -21,7 +21,7 @@ import Wishlist from "../pages/Wishlist.jsx"
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Homepage />} />
+      <Route path="/" element={<Home />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/product/:id" element={<ProductDetails />} />
 
