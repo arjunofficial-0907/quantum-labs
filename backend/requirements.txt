@@ -2,7 +2,6 @@ fastapi
 uvicorn
 sqlalchemy
 psycopg2-binary
-passlib[bcrypt]
 python-jose
 pydantic
 python-multipart
@@ -11,3 +10,5 @@ python-dotenv
 razorpay
 email-validator
 pydantic[email]
+bcrypt==4.1.2
+passlib[bcrypt]==1.7.4
