@@ -1,0 +1,14 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="28" fill="#00A651"></circle>
+  
+  <!-- Q ring -->
+  <circle cx="30" cy="30" r="14" fill="white"></circle>
+  <circle cx="30" cy="30" r="10" fill="#00A651"></circle>
+
+  <!-- Q tail -->
+  <rect x="36" y="34" width="10" height="4" rx="2" transform="rotate(35 36 34)" fill="white"></rect>
+
+  <!-- Small "quantum spark" dot -->
+  <circle cx="42" cy="18" r="3" fill="#00A651" stroke="white" stroke-width="2"></circle>
+</svg>
