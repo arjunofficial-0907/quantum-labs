@@ -18,8 +18,10 @@ app = FastAPI(
 )
 
 # Read allowed URLs from .env
-FRONTEND_URL = os.getenv("FRONTEND_URL")
-ADMIN_URL = os.getenv("ADMIN_URL")
+FRONTEND_URL_1 = os.getenv("FRONTEND_URL_1")
+FRONTEND_URL_2 = os.getenv("FRONTEND_URL_2")
+ADMIN_URL_1 = os.getenv("ADMIN_URL_1")
+ADMIN_URL_2 = os.getenv("ADMIN_URL_2")
 
 # Allowed origins
 origins = [
@@ -30,11 +32,15 @@ origins = [
 ]
 
 # Add production URLs if present
-if FRONTEND_URL:
-    origins.append(FRONTEND_URL)
-if ADMIN_URL:
-    origins.append(ADMIN_URL)
-
+if FRONTEND_URL_1:
+    origins.append(FRONTEND_URL_1)
+if FRONTEND_URL_2:
+    origins.append(FRONTEND_URL_2)
+if ADMIN_URL_1:
+    origins.append(ADMIN_URL_1)
+if ADMIN_URL_2:
+    origins.append(ADMIN_URL_2)
+    
 # CORS SETTINGS
 app.add_middleware(
     CORSMiddleware,
