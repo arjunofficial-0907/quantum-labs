@@ -1,4 +1,6 @@
 # backend/app/utils/auth.py
+import os
+SECRET_KEY = os.getenv("SECRET_KEY")
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
@@ -7,7 +9,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
 
-SECRET_KEY = "your-secret-key"  # change this later to something secure
+SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
