@@ -12,3 +12,4 @@ email-validator
 pydantic[email]
 bcrypt==4.1.2
 passlib[bcrypt]==1.7.4
+cloudinary

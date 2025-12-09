@@ -7,7 +7,10 @@ from app.models.user import User
 from app.utils.auth import get_current_user
 from app.models.category import Category
 from fastapi.responses import JSONResponse
-import uuid, os, json
+import uuid, json
+
+# NEW IMPORT
+import cloudinary.uploader
 
 router = APIRouter(prefix="/api/products", tags=["Products"])
 
@@ -77,8 +80,8 @@ def create_product(
     category_id: int = Form(...),
     tech_stack: str = Form("[]"),
     features: str = Form("[]"),
-    rating: float = Form(0.0),                # NEW
-    reviews_count: int = Form(0),             # NEW
+    rating: float = Form(0.0),
+    reviews_count: int = Form(0),
     is_featured: bool = Form(True),
     image: UploadFile = File(...),
     db: Session = Depends(get_db),
@@ -91,23 +94,23 @@ def create_product(
     if not category_exists:
         raise HTTPException(status_code=404, detail="Invalid category_id")
 
-    # generate slug
+    # --------- GENERATE SLUG ----------
     slug = title.lower().replace(" ", "-")
     existing_slug = db.query(Product).filter(Product.slug == slug).first()
     if existing_slug:
         slug = f"{slug}-{uuid.uuid4().hex[:6]}"
 
-    # save file
-    filename = f"{uuid.uuid4().hex}.jpg"
-    save_path = f"uploads/products/{filename}"
-    os.makedirs("uploads/products", exist_ok=True)
+    # --------- UPLOAD IMAGE TO CLOUDINARY ----------
+    try:
+        upload_result = cloudinary.uploader.upload(
+            image.file,
+            folder="quantumlabs/products"
+        )
+        image_url = upload_result["secure_url"]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Cloudinary Upload Failed: {str(e)}")
 
-    with open(save_path, "wb") as buffer:
-        buffer.write(image.file.read())
-
-    image_url = f"http://127.0.0.1:8000/static/products/{filename}"
-
-    # parse json fields
+    # --------- PARSE JSON FOR ARRAY FIELDS ----------
     try:
         tech_list = json.loads(tech_stack)
     except:
@@ -130,8 +133,8 @@ def create_product(
         stock=100,
         tech_stack=tech_list,
         features=feature_list,
-        rating=rating,                      # NEW
-        reviews_count=reviews_count,        # NEW
+        rating=rating,
+        reviews_count=reviews_count,
     )
 
     db.add(new_product)
@@ -146,7 +149,7 @@ def create_product(
 def delete_product(
     product_id: int,
     user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="Not allowed")
