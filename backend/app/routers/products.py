@@ -52,15 +52,6 @@ def list_products(
     return [serialize_product(p) for p in products]
 
 
-# ---------- GET PRODUCT BY ID ----------
-@router.get("/{product_id}")
-def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = db.query(Product).filter(Product.id == product_id).first()
-    if not product:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return serialize_product(product)
-
-
 # ---------- GET PRODUCT BY SLUG ----------
 @router.get("/slug/{slug}")
 def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
@@ -69,6 +60,14 @@ def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Product not found")
     return serialize_product(product)
 
+
+# ---------- GET PRODUCT BY ID ----------
+@router.get("/{product_id}")
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return serialize_product(product)
 
 # ---------- CREATE PRODUCT ----------
 @router.post("/")
